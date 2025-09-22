@@ -16,20 +16,21 @@ function App() {
   return (
   <div className="p-6">
     <h1 className="text-2xl font-bold mb-4">🌤 Weather Picnic Planner</h1>
-    <div className="flex flex-col space-y-4">
+    <div className="grid grid-cols-7 gap-4">
       {days.map((day, i) => (
         <div
           key={i}
           className={`p-4 rounded-xl shadow-md text-center text-white ${conditionColors[day.condition]}`}
         >
-          <p className="font-semibold">{day.date}</p>
-          <p>{Math.round(day.temp)}°C</p>
+          <p className="font-semibold">{new Date(day.date).toLocaleDateString("en-US", { weekday: "short" })}</p>
+          <p className="text-sm">{new Date(day.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+          <p className="mt-2">{Math.round(day.temp)}°F</p>
           <p>🌧 {Math.round(day.rainChance)}%</p>
         </div>
       ))}
     </div>
   </div>
-);
+  );
 }
 
 export default App
