@@ -11,6 +11,22 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
       try {
         setLoading(true);
 
+        //check for local storage on a specific location
+        const cacheKey = `weather-${latitude}-${longitude}`; //key name
+        const cached = localStorage.getItem(cacheKey); //key value
+
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          const now = Date.now();
+
+          //cache valid for 1 hour
+          if (now - parsed.timestamp < 1000 * 60 * 60) {
+            setDays(parsed.data);
+            setLoading(false);
+            return; //use cached data
+          }
+        }
+
         const params = {
           latitude,
           longitude,
@@ -31,6 +47,7 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
         const utcOffsetSeconds = response.utcOffsetSeconds();
         const daily = response.daily();
 
+        //get data from response
         const weatherData = {
           time: [...Array((Number(daily.timeEnd()) - Number(daily.time())) / daily.interval())].map(
             (_, i) => new Date((Number(daily.time()) + i * daily.interval() + utcOffsetSeconds) * 1000)
@@ -39,7 +56,7 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
           precipitation_probability_mean: daily.variables(3).valuesArray(),
         };
 
-        // Add condition based on temp & rain
+        //add condition based on temp & rain
         const condition = Array.from(weatherData.temperature_2m_mean).map((temp, i) => {
           const rainProb = weatherData.precipitation_probability_mean[i];
           if (temp >= 68 && temp <= 72 && rainProb <= 10) return "green";
@@ -48,12 +65,19 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
           return "red";
         });
 
+        //modify to have array of dicts with a day representing the conditions
         const days = weatherData.time.map((date, i) => ({
           date: date.toDateString(),
           temp: weatherData.temperature_2m_mean[i],
           rainChance: weatherData.precipitation_probability_mean[i],
           condition: condition[i],
         }));
+
+        //save to cache
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify({ timestamp: Date.now(), data: days })
+        );
 
         setDays(days);
       } catch (err) {
