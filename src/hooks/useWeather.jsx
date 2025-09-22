@@ -60,7 +60,7 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
         const condition = Array.from(weatherData.temperature_2m_mean).map((temp, i) => {
           const rainProb = weatherData.precipitation_probability_mean[i];
           if (temp >= 68 && temp <= 72 && rainProb <= 10) return "green";
-          if ((temp >= 57 && temp <= 67) || (temp >= 73 && temp <= 89) || rainProb <= 49)
+          if ((rainProb <= 49 || temp >= 57 && temp <= 67) || (temp >= 73 && temp <= 89))
             return "yellow";
           return "red";
         });
