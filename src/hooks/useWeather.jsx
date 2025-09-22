@@ -23,7 +23,7 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
           if (now - parsed.timestamp < 1000 * 60 * 60) {
             setDays(parsed.data);
             setLoading(false);
-            return; //use cached data
+            return; //use cached data, return out of useEffect
           }
         }
 
@@ -37,7 +37,7 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
             "precipitation_probability_mean",
           ],
           timezone: "auto",
-          forecast_days: 14,
+          forecast_days: 15, //one more day for filtering purposes
           temperature_unit: "fahrenheit",
           precipitation_unit: "inch",
         };
@@ -65,13 +65,19 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
           return "red";
         });
 
+        const today = new Date(); //get todays date as sometimes api gets yesterdays data
+        today.setHours(0, 0, 0, 0); // normalize to midnight
+
+
         //modify to have array of dicts with a day representing the conditions
         const days = weatherData.time.map((date, i) => ({
           date: date.toDateString(),
           temp: weatherData.temperature_2m_mean[i],
           rainChance: weatherData.precipitation_probability_mean[i],
           condition: condition[i],
-        }));
+          }))
+          .filter((day) => new Date(day.date) >= today) //filter out yesterdays date if there
+          .slice(0, 14); //set to 14 days in case more days show up
 
         //save to cache
         localStorage.setItem(
