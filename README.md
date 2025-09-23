@@ -1,6 +1,6 @@
 # Weather Picnic Planner
 
-A React-based web app to help plan picnics by showing current and forecasted weather, along with historical averages for the same date over the past 10 years. Users can select their location or use their current location to get tailored forecasts.
+A React-based web app to help plan picnics by showing current and forecasted weather, along with historical averages for the same date over the past 10 years. Users will have to use their current location to get tailored forecasts.
 
 # Features
 
