@@ -1,92 +1,65 @@
-# ☀️ Weather Picnic Planner
+# Weather Picnic Planner
 
-Welcome to the Weather Picnic Planner code exercise! Your goal is to create a robust, intuitive application that helps users choose the best day for a picnic based on weather forecasts and historical trends. You will use the [Open-Meteo API](https://open-meteo.com/) as your primary weather data source.
+A React-based web app to help plan picnics by showing current and forecasted weather, along with historical averages for the same date over the past 10 years. Users can select their location or use their current location to get tailored forecasts.
 
-## 🎯 Main Features and Requirements
+# Features
 
-### 1. Interactive Two Week Forecast Calendar
+- 14-day weather forecast with temperature, precipitation, humidity, and wind.
+- Conditional color-coding for picnic suitability (green = ideal, yellow = fair, red = poor).
+- Historical averages for the same date over the past 10 years.
+- Uses current geolocation or input a city for forecast.
+- Data caching with LocalStorage to minimize API calls.
+- Responsive UI built with Tailwind CSS, displayed as a calendar-like view.
 
-**Description:**
+# Getting Started
 
-- Display a calendar showing the next two weeks from today's date (inclusive of today).
-- Dates should be color coded according to picnic suitability:
-  - **Green:** Ideal picnic conditions (comfortable temperatures, low chance of rain).
-  - **Yellow:** Fair conditions (moderate temperatures, slight chance of rain).
-  - **Red:** Poor conditions (extreme temperatures, high chance of rain).
+### Prerequisites
 
-**Architecture Considerations:**
+- Node.js 18+
+- npm or yarn
 
-- Define clear criteria for "ideal," "fair," and "poor" conditions.
-- Implement efficient data fetching and caching.
+### Installation
 
-### 2. Detailed Weather View for Each Day
+```
+git clone https://github.com/BritHD/picnic-planner.git
+cd picnic-planner
+npm install
+```
 
-**Description:**
+### Running Locally
 
-- Clicking a date on the calendar should display:
-  - Forecasted temperature, precipitation, humidity, and wind details.
-  - Historical weather statistics for that date from the past 10 years (average temperatures, precipitation patterns, etc.).
+`npm run dev`
 
-**Architecture Considerations:**
+### Building for Production
 
-- Aggregate and clearly visualize historical data.
-- Handle multiple concurrent data requests efficiently.
+`npm run build`
 
-### 3. Local Storage and Data Caching
+# Architecture Decisions & Trade-offs
 
-**Description:**
+- **Open-Metro's Weather Api** -- This was required to use, and it provided information such as precipitation, wind speed, temperature, and rain sum. This was enough to make a website with all the relavant info I needed, though it did require a lot of reading to know what parameters I needed to get what exactly I need to display.
 
-- Cache weather data locally to minimize unnecessary API calls and improve app performance.
-- Clearly document caching strategy including refresh intervals and cache invalidation.
+- **React.js** -- This was picked since it's the framework I'm most familiar with and it integrates API fetching using useEffect and hooks. Components and hooks make data management straightforward.
 
-**Architecture Considerations:**
+- **Tailwind CSS** -- Used to make styling more manageable and responsive without writing a lot of custom CSS. I also think it makes css more manageable without making a separate file for just styling on a small project like this
 
-- Choose appropriate local storage (e.g., localStorage, IndexedDB, SQLite).
-- Clearly document cache management strategies.
+- **Data Caching with LocalStorage** -- Weather updates are only needed for 14 days and change daily. LocalStorage is built-in and simple, so caching data for 1 hour reduces API calls while ensuring reasonably fresh data.
 
-### 4. API Abstraction and Extensibility
+- **Time Zone Handling** -- The API sometimes returned yesterday's date depending on time zone. I added logic to filter out yesterday's data. This works for now but may have edge cases in other time zones that I did not test, as it only works with current location.
 
-**Description:**
+- **Picnic Condition Logic** -- Determining "ideal picnic conditions" is pretty subjective and it was hard determining what really is the ideal picnic weather. I defined green, yellow, and red coding based on temperature and precipitation, which may result in more yellow-coded days depending on recent weather.
 
-- Implement a clear abstraction layer around the Open-Meteo API.
-- Ensure your architecture allows easy substitution or addition of alternative weather data sources.
+- **Location Handling** -- Users can use their current loaction with a button, and the coordinate's weather forcast are cached in LocalStorage, but if the user moves about around a mile, a new forecast will be generated for the updated location.
 
-**Architecture Considerations:**
+- **Historical Data** -- Calculating 10-year averages required multiple API calls for the same day in past years. With 14 days this totals to 14 api calls. Values are then averaged to provide historical context for the selected date.
 
-- Craft a clear interface design.
+**Trade-offs:**
 
-## 📌 Bonus Features (Optional Stretch Goals)
+- Using LocalStorage is simple but can lead to slightly stale data if weather changes more frequently than hourly, or if the local storage needs to be cleared out if the user moves frequently.
 
-Consider implementing one or more of the following to showcase advanced architectural thinking:
+- Time zone filtering may not be perfect for all locations globally. The user might also rather input a location rather than use their own location, which I do have unused code trying to test that out, but ultimately decided for this project we only use current location.
 
-- **Location Selection:** Allow users to dynamically select or update their picnic location.
-- **User Preferences:** Enable users to customize weather criteria (e.g., temperature thresholds).
+- Subjectivity in picnic conditions means some days may appear "yellow" even if personally they feel fine.
 
-## 🔨 Technical Expectations
+- Having graphs to show the data might be more appealing to the user, and help them consume the information more quickly and clearly. I would add it but I didn't feel like it was important enough for this project, so having plain text was the most suitable option
 
-Clearly demonstrate the following in your submission:
-
-- Separation of concerns and modular design
-- Clear, maintainable, and well documented code
-- Performance considerations and optimizations
-- Handling of edge cases and errors
-- Thoughtful user experience (while not looking for UI perfection, we do want an easily useable interface)
-
-## 🛠 Deliverables
-
-- Working source code in a publicly accessible repository
-  - Fork this repo and submit a PR with from your repo to alert us that you are ready for us to review
-- Instructions on how to run, build, and test the application
-- Documentation (or README) explaining architecture decisions and trade-offs
-
-## 🎖 Evaluation Criteria
-
-Your submission will be evaluated based on:
-
-- **Architecture Quality** (modularity, maintainability, scalability)
-- **Code Clarity and Readability**
-- **Implementation of Core Features**
-
----
-
-Good luck, have fun, and happy coding! 🌤
+- The calendar-like ui may be a bit confusing to the user as the first column starts on the day they are currently in, resulting in a sense of normalacy in a calendar being off. I thought to instead make 3 rows or boxes, and only have the current date plus 14 days being shown in the correct calendar format, but it would have an imbalanced symmetry, which I feel is worse. There wasn't anything that satisfied me at this point so the current format will have to do.
