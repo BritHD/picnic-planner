@@ -1,23 +1,59 @@
 import useWeather from './hooks/useWeather.jsx';
 import useWeatherHistorical from './hooks/useWeatherHistorical.jsx';
 import { useState } from "react";
+import getCurrentLocation from './utils/getCurrentLocation.jsx';
+// import getCityCoords from "./hooks/getCityCoords.jsx"
 
 function App() {
-  const { days, loading, error } = useWeather(); //hook to get api current
-  const { hisdays, hisloading, hiserror } = useWeatherHistorical(); //hook to get api current (and change name too)
+  const [selectedDay, setSelectedDay] = useState(null); //selected day when clicking
+  const [coords, setCoords] = useState({lat: null, long: null}); //current coords if known {lat, long}
+  const { days, loading, error } = useWeather(coords.lat, coords.long); //hook to get api current
+  const { hisdays, hisloading, hiserror } = useWeatherHistorical(coords.lat, coords.long); //hook to get api current (and change name too)
   const conditionColors = { //conditional colors for tailwind
     green: "bg-green-500",
     yellow: "bg-yellow-500",
     red: "bg-red-500",
   };
-  const [selectedDay, setSelectedDay] = useState(null); //selected day when clicking
+  
+  // const [city, setCity] = useState("");
+
+  // const handleCitySubmit = async () => { //handle city submit
+  //   try {
+  //     const c = await getCityCoords(city);
+  //     setCoords(c);
+  //   } catch (err) {
+  //     alert(err.message);
+  //   }
+  // };
 
   if (loading || hisloading) return <p className="p-6">Loading forecast...</p>;
   if (error || hiserror) return <p className="p-6 text-red-500">Error: {error}</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">🌤 Weather Picnic Planner</h1>
+      <h1 className="text-2xl font-bold my-2">🌤 Weather Picnic Planner</h1>
+      <h1 className='text-xl font-bold my-2'>Weather Latitude and Longitude: ({coords.lat || "null"}, {coords.long || "null"})</h1>
+      <div className="flex gap-2 mb-2">
+        {/* <input
+          type="text"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          placeholder="Enter city"
+          className="border rounded px-3 w-full"
+        />
+        <button
+          onClick={handleCitySubmit}
+          className="bg-blue-500 text-white px-4 rounded"
+        >
+          Search
+        </button> */}
+        <button
+          onClick={() => getCurrentLocation(setCoords)}
+          className="bg-green-500 text-white px-4 rounded"
+        >
+          Use My Location
+        </button>
+      </div>
       <div className="grid grid-cols-7 gap-4">
         {days.map((day, i) => (
           <div

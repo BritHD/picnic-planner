@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { fetchWeatherApi } from "openmeteo";
 
 //current data weather
-function useWeather(latitude = 40.4406, longitude = -79.9959) {
+function useWeather(latitude, longitude) {
   const [days, setDays] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,10 +12,15 @@ function useWeather(latitude = 40.4406, longitude = -79.9959) {
       try {
         setLoading(true);
 
+        if (latitude == null || longitude == null) { //if long and lat is empty, return, so no weather
+          setLoading(false);
+          return
+        }
+
         //check for local storage on a specific location
         const cacheKey = `weather-${latitude}-${longitude}`; //key name
         const cached = localStorage.getItem(cacheKey); //key value
-
+        
         if (cached) {
           const parsed = JSON.parse(cached);
           const now = Date.now();
