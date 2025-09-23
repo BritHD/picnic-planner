@@ -1,4 +1,5 @@
-import { useWeather, useWeatherHistorical } from './hooks/useWeather.jsx';
+import useWeather from './hooks/useWeather.jsx';
+import useWeatherHistorical from './hooks/useWeatherHistorical.jsx';
 import { useState } from "react";
 
 function App() {
