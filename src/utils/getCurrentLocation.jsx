@@ -15,7 +15,7 @@ function getCurrentLocation(setCoords) { //argument is the setter of the argumen
       },
       (err) => {
         console.error("Error getting location:", err);
-        alert("Could not get your location. Please enter a city instead.");
+        alert("Could not get your location. Refresh to try again.");
       }
     );
   } else {
